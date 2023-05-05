@@ -9,10 +9,13 @@ class DropFileController {
 	static readonly Geometry_Model_File = "geometryModel";
 	constructor() {}
 
-	initialize(htmlObj: HTMLElement, listener: (files: IFileUrlObj[], opType?: string) => void): void {
+	initialize(htmlObj: HTMLElement, listener: (files: IFileUrlObj[], opType?: string) => void = null): void {
 		if (this.m_htmlObj == null) {
+			console.log("DropFileController::initialize() ...");
 			this.m_htmlObj = htmlObj;
-			this.m_listener = listener;
+			if(listener) {
+				this.m_listener = listener;
+			}
 			this.initDrop(this.m_htmlObj);
 			this.m_inited = true;
 		}

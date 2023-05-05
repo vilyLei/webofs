@@ -3,7 +3,9 @@ import { DropFileController } from "./base/DropFileController";
 
 class WebOFS {
 	private m_init = true;
+	// private m_pastingDiv: HTMLDivElement = null;
 	readonly dropController = new DropFileController();
+	pastingHTMLElement: HTMLElement = null;
 	savingFileData: ArrayBuffer | string | HTMLCanvasElement | HTMLImageElement = null;
 	savingFileName: string = "default.bin";
 	pngEnabled = false;
@@ -13,6 +15,7 @@ class WebOFS {
 	}
 	initialize(): void {
 		if (this.m_init) {
+			this.initPaste();
 			let platform = navigator.platform as any;
 			window.addEventListener(
 				"keydown",
@@ -21,12 +24,9 @@ class WebOFS {
 						let prevent = false;
 						switch (e.keyCode) {
 							case 83:
+								// ctrl + S
 								prevent = true;
 								this.saveFile();
-								break;
-							case 17:
-								// ctrl + N
-								prevent = true;
 								break;
 							case 79:
 								// ctrl + O
@@ -46,7 +46,30 @@ class WebOFS {
 			this.m_init = false;
 		}
 	}
+	private initPaste(): void {
+		let pwin: any = window;
+		console.log("pasting function init ...");
+		let ele = this.pastingHTMLElement ? this.pastingHTMLElement : document;
+		// 此事件监听添加在document上，该事件会有冒泡行为，则本页面上任何地方的粘贴操作都会触发
+		ele.addEventListener("paste", (e: any): void => {
+			console.log("##### ImageFileReader::initPaste(), e: ", e);
 
+			const items = (e.clipboardData || pwin.clipboardData).items;
+			if (items && items.length) {
+				let files = [];
+				for (let i = 0; i < items.length; i++) {
+					let file = items[i].getAsFile();
+					if (file) {
+						files.push(file);
+					}
+				}
+				if (files.length > 0) {
+					console.log("##### pasting files: ", files);
+					this.dropController.initFilesLoad(files);
+				}
+			}
+		});
+	}
 	createCanvasData(srcImg: HTMLImageElement | HTMLCanvasElement): string {
 		const canvas = document.createElement("canvas");
 		canvas.width = srcImg.width;
