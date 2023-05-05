@@ -1,5 +1,6 @@
 
-import {DemoBase as Demo} from "./demo/DemoBase";
+// import {DemoBase as Demo} from "./demo/DemoBase";
+import {DemoWebOFS as Demo} from "./demo/DemoWebOFS";
 
 document.title = "web os file system";
 let ins = new Demo();
